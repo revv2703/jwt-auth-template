@@ -41,19 +41,19 @@ export async function refreshAccessTokenHandler(req: Request, res: Response) {
     const decoded = verifyJwt<{session: string}>(refreshToken, "refreshTokenPublicKey")
 
     if(!decoded){
-        return res.status(401).send("Could not refresh access token")
+        return res.status(401).send("Could not refresh access token(Could not verify JWT))")
     }
 
     const session = await findSessionById(decoded.session)
 
     if(!session || !session.valid){
-        return res.status(401).send("Could not refresh access token")
+        return res.status(401).send("Could not refresh access token(Invalid Session)")
     }
 
     const user = await findUserById(String(session.user))
 
     if(!user){
-        return res.status(401).send("Could not refresh access token")
+        return res.status(401).send("Could not refresh access token(Usernot found)")
     }
 
     const accessToken = signAccessToken(user)
